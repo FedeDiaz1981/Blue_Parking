@@ -1,0 +1,167 @@
+---
+/**
+ * HeroSlider.astro — minimal + overlay fijo
+ *
+ * Props:
+ *  - items: Array<{ img: string; alt: string }>
+ *  - intervalMs?: number = 5000
+ *  - autoplay?: boolean = true
+ *  - showDots?: boolean = true
+ */
+type Slide = { img: string; alt: string };
+
+interface Props {
+  items: Slide[];
+  intervalMs?: number;
+  autoplay?: boolean;
+  showDots?: boolean;
+}
+
+const {
+  items = [],
+  intervalMs = 5000,
+  autoplay = true,
+  showDots = true,
+} = Astro.props as Props;
+
+const slides = items.map((it, idx) => ({
+  src: it.img,
+  alt: it.alt?.trim() || `Slide ${idx + 1}`,
+  isFirst: idx === 0,
+}));
+---
+
+{slides.length > 0 && (
+<section
+  class="relative w-full h-[90svh] md:h-[90vh] overflow-hidden"
+  aria-roledescription="carousel"
+  aria-label="Carrusel principal"
+  data-interval={intervalMs}
+  data-autoplay={autoplay ? "1" : "0"}
+>
+  <!-- TRACK: mueve solo las imágenes -->
+  <div class="h-full w-full flex transition-transform duration-500 will-change-transform z-10" data-track>
+    {slides.map((s) => (
+      <div class="relative w-full shrink-0 h-full" role="group" aria-roledescription="slide" aria-label={s.alt}>
+        <img
+          src={s.src}
+          alt={s.alt}
+          class="absolute inset-0 h-full w-full object-cover"
+          loading={s.isFirst ? "eager" : "lazy"}
+          fetchpriority={s.isFirst ? "high" : "auto"}
+          decoding="async"
+          sizes="100vw"
+        />
+        <!-- Gradiente por slide (opcional) -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent pointer-events-none"></div>
+      </div>
+    ))}
+  </div>
+
+  <!-- OVERLAY FIJO SOBRE TODO EL SLIDER -->
+  <div class="absolute inset-0 z-30 pointer-events-none">
+    <div class="h-full flex items-end md:items-center">
+      <div class="pointer-events-auto w-full px-5 sm:px-8 md:px-12 lg:px-16 pb-10 md:pb-0">
+        <slot name="overlay" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Controles: arriba de overlay -->
+  <button
+    class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/40 hover:bg-black/60 text-white p-2 focus:outline-none focus:ring-2 focus:ring-white/60 z-40"
+    aria-label="Anterior"
+    data-prev
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-6 w-6">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+  </button>
+  <button
+    class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/40 hover:bg-black/60 text-white p-2 focus:outline-none focus:ring-2 focus:ring-white/60 z-40"
+    aria-label="Siguiente"
+    data-next
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-6 w-6">
+      <path d="M9 6l6 6-6 6"/>
+    </svg>
+  </button>
+
+  <!-- Dots -->
+  {showDots && (
+    <div class="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-2 z-40">
+      {slides.map((_, i) => (
+        <button
+          class="h-2.5 w-2.5 rounded-full bg-white/50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-white/60 data-[active=true]:w-6 data-[active=true]:bg-white"
+          aria-label={`Ir al slide ${i + 1}`}
+          data-dot={i}
+        />
+      ))}
+    </div>
+  )}
+
+  <script is:inline>
+  (() => {
+    const root = document.currentScript && document.currentScript.parentElement;
+    if (!root) return;
+
+    const track     = root.querySelector('[data-track]');
+    const slidesEls = track ? Array.from(track.children) : [];
+    const dots      = Array.from(root.querySelectorAll('[data-dot]'));
+    const btnPrev   = root.querySelector('[data-prev]');
+    const btnNext   = root.querySelector('[data-next]');
+
+    const INTERVAL = Number(root.dataset.interval || "5000");
+    const AUTOPLAY = root.dataset.autoplay === "1";
+
+    let i = 0;
+    let timer = null;
+
+    function apply() {
+      if (track && track instanceof HTMLElement) {
+        track.style.transform = `translate3d(-${i * 100}%,0,0)`;
+      }
+      dots.forEach((d, idx) => d.setAttribute('data-active', String(idx === i)));
+      slidesEls.forEach((el, idx) =>
+        el.setAttribute('aria-label', `${idx + 1} de ${slidesEls.length}`)
+      );
+    }
+
+    function go(to) { i = (to + slidesEls.length) % slidesEls.length; apply(); }
+    const next = () => go(i + 1);
+    const prev = () => go(i - 1);
+
+    const start = () => { if (AUTOPLAY && slidesEls.length > 1) timer = window.setInterval(next, INTERVAL); };
+    const stop  = () => { if (timer) { clearInterval(timer); timer = null; } };
+
+    btnNext?.addEventListener('click', () => { stop(); next(); start(); });
+    btnPrev?.addEventListener('click', () => { stop(); prev(); start(); });
+    dots.forEach((d, idx) => d.addEventListener('click', () => { stop(); go(idx); start(); }));
+
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { stop(); next(); start(); }
+      if (e.key === 'ArrowLeft')  { stop(); prev(); start(); }
+    });
+
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin',  stop);
+    root.addEventListener('focusout', start);
+
+    // Swipe
+    let sx = 0, dx = 0, active = false;
+    root.addEventListener('touchstart', (e) => { active = true; sx = e.touches[0].clientX; dx = 0; stop(); }, { passive: true });
+    root.addEventListener('touchmove', (e) => { if (!active) return; dx = e.touches[0].clientX - sx; }, { passive: true });
+    root.addEventListener('touchend', () => {
+      if (!active) return;
+      if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); }
+      active = false; start();
+    }, { passive: true });
+
+    document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+
+    apply(); start();
+  })();
+  </script>
+</section>
+)}

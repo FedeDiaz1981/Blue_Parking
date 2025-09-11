@@ -1,0 +1,105 @@
+---
+/* Sin props: contenido fijo según el fragmento */
+---
+
+<section id="STATS" class="py-16 sm:py-20 bg-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Reservas concretadas -->
+      <div class="text-center">
+        <p class="text-sm font-medium tracking-wider text-gray-600">
+          Reservas concretadas
+        </p>
+        <div class="mt-2 flex items-baseline justify-center gap-1">
+          <span class="text-4xl md:text-5xl font-extrabold text-gray-900"
+            >+</span
+          >
+          <span
+            class="js-counter text-4xl md:text-5xl font-extrabold text-gray-900"
+            data-to="90000"
+            data-duration="2000">0</span
+          >
+        </div>
+      </div>
+
+      <!-- Cocheras disponibles -->
+      <div class="text-center">
+        <p class="text-sm font-medium tracking-wider text-gray-600">
+          Cocheras disponibles
+        </p>
+        <div class="mt-2 flex items-baseline justify-center gap-1">
+          <span class="text-4xl md:text-5xl font-extrabold text-gray-900"
+            >+</span
+          >
+          <span
+            class="js-counter text-4xl md:text-5xl font-extrabold text-gray-900"
+            data-to="500"
+            data-duration="2000">0</span
+          >
+        </div>
+      </div>
+
+      <!-- Operando con excelencia -->
+      <div class="text-center">
+        <p class="text-sm font-medium tracking-wider text-gray-600">
+          Operando con excelencia
+        </p>
+        <div class="mt-2 flex items-baseline justify-center gap-1">
+          <span
+            class="js-counter text-4xl md:text-5xl font-extrabold text-gray-900"
+            data-to="18"
+            data-duration="2000">0</span
+          >
+          <span class="text-xl md:text-2xl font-semibold text-gray-900"
+            >Años</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Animación de conteo al entrar en viewport -->
+  <script is:inline>
+    (() => {
+      const counters = Array.from(document.querySelectorAll(".js-counter"));
+      if (!counters.length) return;
+
+      const fmt = new Intl.NumberFormat("es-AR");
+
+      function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      function animate(el) {
+        const to = Number(el.dataset.to || "0");
+        const dur = Number(el.dataset.duration || "2000");
+        const start = performance.now();
+
+        function frame(now) {
+          const t = Math.min(1, (now - start) / dur);
+          const val = Math.round(to * easeOutCubic(t));
+          el.textContent = fmt.format(val);
+          if (t < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              const el = e.target;
+              if (el.getAttribute("data-animated") === "1") return;
+              el.setAttribute("data-animated", "1");
+              animate(el);
+              io.unobserve(el);
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+
+      counters.forEach((el) => io.observe(el));
+    })();
+  </script>
+</section>

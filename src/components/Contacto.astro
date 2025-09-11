@@ -1,0 +1,68 @@
+---
+/* Sin props: contenido fijo según el fragmento */
+---
+<section id="CONTACTO" class="scroll-mt-16 py-16 sm:py-20 bg-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <!-- Mapa -->
+      <div class="aspect-[16/10] w-full overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+        <iframe
+          loading="lazy"
+          src="https://maps.google.com/maps?q=Estacionamiento%20la%20tranquera&t=m&z=12&output=embed&iwloc=near"
+          title="Estacionamiento La Tranquera"
+          aria-label="Estacionamiento La Tranquera"
+          class="h-full w-full"
+        ></iframe>
+      </div>
+
+      <!-- Datos de contacto -->
+      <div class="flex flex-col justify-center">
+        <h3 class="text-sm font-semibold tracking-wider text-blue-600">Contacto</h3>
+
+        <ul class="mt-6 space-y-4 text-gray-800">
+          <li>
+            <a
+              href="mailto:Info@estacionamientolatranquera.com.ar"
+              class="inline-flex items-center gap-3 hover:text-blue-700"
+              target="_blank" rel="noopener"
+            >
+              <!-- ícono mail -->
+              <svg class="h-5 w-5" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+                <path d="M464 64H48C21 64 0 85 0 112v288c0 27 21 48 48 48h416c27 0 48-21 48-48V112c0-27-21-48-48-48zm0 48v41c-22 18-58 47-135 106-17 13-50 45-73 45s-56-32-73-45C106 199 70 171 48 153V112h416zM48 400V214c23 18 55 44 105 83 22 17 60 55 103 55s81-37 103-55c49-39 82-64 105-83V400H48z"/>
+              </svg>
+              <span>Info@estacionamientolatranquera.com.ar</span>
+            </a>
+          </li>
+
+          <li>
+            <a
+              href="https://wa.me/+541136000205?text=%C2%A1Hola!%20Quiero%20reservar%20una%20cochera."
+              class="inline-flex items-center gap-3 hover:text-blue-700"
+              target="_blank" rel="noopener"
+            >
+              <!-- ícono teléfono/whatsapp genérico -->
+              <svg class="h-5 w-5" viewBox="0 0 384 512" fill="currentColor" aria-hidden="true">
+                <path d="M97 507C-33 377-33 167 97 37c6-6 15-7 22-2l65 41c7 4 10 13 7 21l-32 81c-3 8-11 12-19 11l-56-6c-21 58-20 122 0 180l56-6c8-1 16 3 19 11l32 81c3 8 0 17-7 21l-65 41c-7 5-16 4-22-2z"/>
+              </svg>
+              <span>+54 11 3600-0205</span>
+            </a>
+          </li>
+
+          <li class="pt-2 text-gray-700">
+            <p class="font-medium">Dirección</p>
+            <p>Cam. Real Presbítero González y Aragón S/N, Ezeiza (cerca del Aeropuerto Internacional de Ezeiza)</p>
+          </li>
+        </ul>
+
+        <div class="mt-8">
+          <a
+            href="/reservar"
+            class="inline-flex items-center rounded-md bg-blue-600 px-6 py-3 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+          >
+            Reservar ahora
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

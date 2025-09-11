@@ -1,0 +1,126 @@
+---
+/* Sin props */
+---
+
+<section
+  id="BENEFICIOS"
+  class="relative scroll-mt-16 py-16 sm:py-20 bg-[var(--bp-bg)] text-[var(--bp-ink)]"
+>
+<div class="flex justify-center mb-[5%] " >
+  <p class="text-4xl font-bold tracking-wide text-[var(--bp-ink-muted)]">
+            Beneficios
+          </p>
+</div>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
+    <!-- ===== ITEM 1: [Texto | Número] ===== -->
+    <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <!-- Texto (izq) -->
+      <div class="max-w-xl reveal" style="transition-delay:200ms">
+        <p class="text-4xl font-bold tracking-wide">Estacionamiento cubierto</p>
+        <span class="mt-3 block h-1.5 w-12 rounded-full bg-[var(--bp-accent)]"
+        ></span>
+        <p class="mt-6 text-[var(--bp-ink-muted)] leading-relaxed">
+          Contamos con cocheras techadas y con seguridad.
+        </p>
+      </div>
+
+      <!-- Número (der) pegado al borde cercano al texto → align left -->
+      <div class="flex lg:justify-start">
+        <div
+          role="img"
+          aria-label="Paso 1"
+          class="relative grid place-items-center rounded-full font-extrabold text-white
+                 w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40
+                 text-4xl md:text-5xl lg:text-6xl
+                 bg-gradient-to-br from-[var(--bp-primary-300)] to-[var(--bp-support)]
+                 ring-4 ring-[var(--bp-surface)] shadow-xl
+                 hover:scale-[1.03] transition-transform duration-200"
+        >
+          1
+          <span
+            class="pointer-events-none absolute inset-0 rounded-full blur-2xl opacity-30"
+            style="background: radial-gradient(40% 40% at 50% 50%, var(--bp-support) 0%, transparent 70%);"
+          ></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ITEM 2: [Número | Texto] ===== -->
+    <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <!-- Número (izq) pegado al borde cercano al texto → align right -->
+      <div class="flex lg:justify-end">
+        <div
+          role="img"
+          aria-label="Paso 2"
+          class="relative grid place-items-center rounded-full font-extrabold text-white
+                 w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40
+                 text-4xl md:text-5xl lg:text-6xl
+                 bg-gradient-to-br from-[var(--bp-primary-300)] to-[var(--bp-support)]
+                 ring-4 ring-[var(--bp-surface)] shadow-xl
+                 hover:scale-[1.03] transition-transform duration-200"
+        >
+          2
+          <span
+            class="pointer-events-none absolute inset-0 rounded-full blur-2xl opacity-30"
+            style="background: radial-gradient(40% 40% at 50% 50%, var(--bp-support) 0%, transparent 70%);"
+          ></span>
+        </div>
+      </div>
+
+      <!-- Texto (der) -->
+      <div class="max-w-xl reveal" style="transition-delay:200ms">
+        <p class="text-4xl font-bold tracking-wide">Retiro del vehículo</p>
+        <span class="mt-3 block h-1.5 w-12 rounded-full bg-[var(--bp-accent)]"
+        ></span>
+        <p class="mt-6 text-[var(--bp-ink-muted)] leading-relaxed">
+          Nos informás el número de vuelo de salida, compañía y horario en que
+          llegas al aeropuerto, luego, estaremos comunicados y coordinado el
+          punto de encuentro en la terminal.
+        </p>
+      </div>
+    </div>
+
+    <!-- ===== ITEM 3: [Texto | Número] ===== -->
+    <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <!-- Texto (izq) -->
+      <div class="max-w-xl reveal" style="transition-delay:200ms">
+        <p class="text-4xl font-bold tracking-wide">Entrega del vehículo</p>
+        <span class="mt-3 block h-1.5 w-12 rounded-full bg-[var(--bp-accent)]"
+        ></span>
+        <p class="mt-6 text-[var(--bp-ink-muted)] leading-relaxed">
+          Nos indicás el número de vuelo de llegada, compañía y el horario en
+          que llegas, luego, estaremos comunicados y coordinando el punto de
+          encuentro en la terminal.
+        </p>
+      </div>
+
+      <!-- Número (der) pegado al borde cercano al texto → align left -->
+      <div class="flex lg:justify-start">
+        <div
+          role="img"
+          aria-label="Paso 3"
+          class="relative grid place-items-center rounded-full font-extrabold text-white
+                 w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40
+                 text-4xl md:text-5xl lg:text-6xl
+                 bg-gradient-to-br from-[var(--bp-primary-300)] to-[var(--bp-support)]
+                 ring-4 ring-[var(--bp-surface)] shadow-xl
+                 hover:scale-[1.03] transition-transform duration-200"
+        >
+          3
+          <span
+            class="pointer-events-none absolute inset-0 rounded-full blur-2xl opacity-30"
+            style="background: radial-gradient(40% 40% at 50% 50%, var(--bp-support) 0%, transparent 70%);"
+          ></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-center items-center text-white text-center">
+      <a
+        href="/reservar"
+        class="mt-6 text-center w-[10%] rounded-md bg-[--bp-support] px-6 py-3 text-white font-semibold btn-accent"
+        data-cta-observer>Reserva</a
+      >
+    </div>
+  </div>
+</section>

@@ -1,0 +1,143 @@
+/* global.css */
+/* Tailwind CSS v3 - Estilos base */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Paleta BlueParking (simplificada) ===== */
+:root {
+  /* Marca (azules) */
+  --bp-primary: #1d57a8; /* principal */
+  --bp-primary-600: #184a92; /* hover/active */
+  --bp-primary-300: #2d78d2; /* realce */
+
+  /* Apoyo (celeste del logo) */
+  --bp-support: #2fb4dc;
+  --bp-support-600: #1d8fb3;
+
+  /* Acento cálido (amarillo) */
+  --bp-accent: #ffc400; /* base */
+  --bp-accent-600: #e0ad00; /* hover */
+  --bp-accent-50: #fff3bf; /* fondo suave */
+
+  /* Neutros */
+  --bp-ink: #14223a; /* texto */
+  --bp-ink-muted: #475477; /* texto secundario */
+  --bp-border: #d2def1; /* bordes suaves */
+
+  /* Fondos (cercanos entre sí) */
+  --bp-bg: #f4f8fe; /* claro A */
+  --bp-bg-alt: #eef4fe; /* claro B */
+  --bp-surface: #ffffff; /* tarjetas */
+  --bp-surface-inverse: #1d4b8f; /* oscuro legible */
+}
+
+/* ===== Base ===== */
+@layer base {
+  html,
+  body {
+    color: var(--bp-ink);
+    background: var(--bp-surface);
+  }
+  a {
+    color: var(--bp-primary);
+  }
+  a:hover {
+    color: var(--bp-primary-300);
+  }
+}
+
+/* ===== Componentes utilitarios ===== */
+@layer components {
+  .section-light {
+    background: var(--bp-bg);
+    color: var(--bp-ink);
+  }
+  .section-dark {
+    background: var(--bp-surface-inverse);
+    color: #fff;
+  }
+
+  .btn-primary {
+    background: var(--bp-primary);
+    color: #fff;
+    @apply rounded-md px-5 py-2 font-semibold;
+  }
+  .btn-primary:hover {
+    background: var(--bp-primary-600);
+  }
+
+  .btn-accent {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-accent::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    translate: -120% 0;
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      #fff6 50%,
+      transparent 70%
+    );
+    transition: translate 0.5s;
+  }
+  .btn-accent:hover::after {
+    translate: 120% 0;
+  }
+
+  .badge-accent {
+    background: var(--bp-accent-50);
+    color: #111;
+    border: 1px solid color-mix(in srgb, var(--bp-accent), #000 12%);
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm;
+  }
+}
+
+/* ===== Zebra de secciones (ancho completo) ===== */
+[data-zebra] > section:nth-of-type(odd) {
+  background: var(--bp-bg);
+  color: var(--bp-ink);
+}
+[data-zebra] > section:nth-of-type(even) {
+  background: var(--bp-bg-alt);
+  color: var(--bp-ink);
+}
+/* Links dentro del zebra */
+/* [data-zebra] > section:nth-of-type(odd) a {
+  color: var(--bp-primary);
+} */
+/* [data-zebra] > section:nth-of-type(even) a {
+  color: var(--bp-accent);
+} 
+[data-zebra] > section:nth-of-type(even) a:hover {
+  color: var(--bp-accent-600);
+}*/
+
+/* Extras opcionales */
+.border-soft {
+  border-color: var(--bp-border);
+}
+.text-muted {
+  color: var(--bp-ink-muted);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.hero-chip {
+  @apply text-white rounded-md ring-1 ring-white/10 
+         px-3 md:px-4 py-1 md:py-1.5
+         bg-black/60 backdrop-blur-[1.5px]
+         shadow-[0_2px_10px_rgba(0,0,0,.45)];
+  text-shadow: 0 1px 0 rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.55);
+}

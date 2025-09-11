@@ -1,0 +1,19 @@
+<!-- components/StickyBookBar.astro -->
+<div id="bookbar" class="fixed top-16 inset-x-0 z-40 hidden">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="rounded-xl bg-white/80 backdrop-blur border border-soft p-3 flex items-center justify-between shadow">
+      <span class="font-semibold text-[15px]">¿Listo para reservar?</span>
+      <a href="/reservar" class="btn-accent">Reservá ahora</a>
+    </div>
+  </div>
+</div>
+<script is:inline>
+  const el = document.getElementById('bookbar');
+  const hero = document.querySelector('[data-hero]');
+  if (el && hero) {
+    const io = new IntersectionObserver(([e]) => {
+      el.classList.toggle('hidden', e.isIntersecting);
+    }, { threshold: 0.1 });
+    io.observe(hero);
+  }
+</script>

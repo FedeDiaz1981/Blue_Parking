@@ -1,0 +1,140 @@
+---
+export interface LinkItem { href: string; label: string }
+interface Props {
+  logoHref: string
+  logoSrc: string
+  logoAlt?: string
+  links: LinkItem[]
+  cta?: { href: string; label: string }
+  class?: string
+}
+const {
+  logoHref = "#INICIO",
+  logoSrc = "/logo.svg",
+  logoAlt = "Logo",
+  links = [],
+  cta,
+  class: extra = "",
+} = Astro.props as Props;
+
+
+---
+
+<header
+  id="site-header"
+  class={`sticky top-0 z-50 group ${extra}`}
+  data-scrolled="false"
+>
+  <div
+    class="relative px-4 sm:px-6 lg:px-8 
+           flex h-16 items-center justify-evenly 
+           transition-shadow duration-200
+           group-data-[scrolled=true]:shadow-sm
+           group-data-[scrolled=true]:border-b group-data-[scrolled=true]:border-black/10"
+  >
+    <!-- Capa de fondo: translúcida arriba; sólida al scrollear -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 -z-10
+             transition-all duration-200
+             bg-white/30 supports-[backdrop-filter]:backdrop-blur-sm
+             group-data-[scrolled=true]:bg-white
+             group-data-[scrolled=true]:backdrop-blur-0"
+    ></div>
+
+    <!-- Logo (texto siempre opaco y nítido) -->
+    <a href={logoHref} class="flex items-left gap-3 shrink-0">
+      <img src={logoSrc} alt={logoAlt} class="h-[3.5rem] w-auto" loading="eager" decoding="async" />
+    </a>
+
+    <!-- Botón mobile -->
+    <button
+      id="nav-toggle"
+      class="inline-flex items-center justify-center rounded-md p-2 lg:hidden
+             hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-black/20"
+      aria-controls="primary-nav"
+      aria-expanded="false"
+      aria-label="Abrir menú"
+      type="button"
+    >
+      <svg class="h-6 w-6 block data-[open='true']:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+      <svg class="h-6 w-6 hidden data-[open='true']:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <!-- Navegación -->
+    <nav id="primary-nav" class="hidden lg:flex items-center gap-6" aria-label="Menu">
+      {links.map((item) => (
+        <a href={item.href} class="text-sm font-medium text-gray-900 hover:text-gray-950">
+          {item.label}
+        </a>
+      ))}
+      {cta && (
+        <a
+          href={cta.href}
+          class="ml-2 inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+        >
+          {cta.label}
+        </a>
+      )}
+    </nav>
+  </div>
+
+  <!-- Menú colapsable (mobile) -->
+  <div id="mobile-panel" class="lg:hidden hidden border-t border-gray-200 bg-white">
+    <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex flex-col gap-2" aria-label="Menu móvil">
+      {links.map((item) => (
+        <a href={item.href} class="rounded-md px-2 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
+          {item.label}
+        </a>
+      ))}
+      {cta && (
+        <a href={cta.href} class="mt-1 inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+          {cta.label}
+        </a>
+      )}
+    </nav>
+  </div>
+
+  <script is:inline>
+    (function () {
+      const root = document.getElementById('site-header');
+      const btn = document.getElementById('nav-toggle');
+      const mobile = document.getElementById('mobile-panel');
+
+      const setScrolled = () => {
+        const scrolled = window.scrollY > 0;
+        root?.setAttribute('data-scrolled', scrolled ? 'true' : 'false');
+      };
+      setScrolled();
+      window.addEventListener('scroll', setScrolled, { passive: true });
+
+      let open = false;
+      const syncIcons = () => {
+        btn?.setAttribute('aria-expanded', String(open));
+        btn?.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+        if (open) {
+          mobile?.classList.remove('hidden');
+          btn?.querySelectorAll('svg').forEach(el => el.setAttribute('data-open', 'true'));
+        } else {
+          mobile?.classList.add('hidden');
+          btn?.querySelectorAll('svg').forEach(el => el.removeAttribute('data-open'));
+        }
+      };
+      btn?.addEventListener('click', () => { open = !open; syncIcons(); });
+
+      mobile?.addEventListener('click', (e) => {
+        const target = e.target;
+        if (target instanceof Element && target.tagName === 'A') {
+          open = false; syncIcons();
+        }
+      });
+
+      const mql = window.matchMedia('(min-width: 1024px)');
+      mql.addEventListener('change', (ev) => { if (ev.matches) { open = false; syncIcons(); } });
+    })();
+  </script>
+</header>
