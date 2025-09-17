@@ -34,6 +34,7 @@ const slides = items.map((it, idx) => ({
 {slides.length > 0 && (
 <section
   class="relative w-full h-[90svh] md:h-[90vh] overflow-hidden"
+  id="INICIO"
   aria-roledescription="carousel"
   aria-label="Carrusel principal"
   data-interval={intervalMs}
@@ -60,7 +61,7 @@ const slides = items.map((it, idx) => ({
 
   <!-- OVERLAY FIJO SOBRE TODO EL SLIDER -->
   <div class="absolute inset-0 z-30 pointer-events-none">
-    <div class="h-full flex items-end md:items-center">
+    <div class="h-full flex  mt-[30%] md:mt-10  md:items-center">
       <div class="pointer-events-auto w-full px-5 sm:px-8 md:px-12 lg:px-16 pb-10 md:pb-0">
         <slot name="overlay" />
       </div>

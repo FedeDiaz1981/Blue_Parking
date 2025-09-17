@@ -1,0 +1,177 @@
+---
+/* components/TresFilas.astro */
+interface ImageItem { src: string; alt?: string }
+interface Props {
+  fila1Items?: string[];
+  fila1Images?: ImageItem[];
+  fila2Titulo?: string;
+  fila2Items?: string[];
+  fila3Titulo?: string;
+  fila3Items?: string[];
+}
+
+const {
+  fila1Items = [
+    "Estacionamientos cubiertos y con seguridad",
+    "Promo especial 10% OFF al total de la reserva.",
+    "Te devolvemos tu vehiculo lavado.",
+  ],
+  fila1Images = [
+    { src: "../../public/images/Beneficios/01.jpeg", alt: "Beneficios" },
+    { src: "../../public/images/Beneficios/02.jpeg", alt: "Beneficios" },
+  ],
+  fila2Titulo = "Medios de pago",
+  fila2Items = [
+    "Credito","Debito","Efectivo","Transferencias",
+    "Billeteras virtuales","QR","Dolar","Euros","Reales",
+  ],
+  fila3Titulo = "Sistema flexible",
+  fila3Items = [
+    "24 Hs antes de tu salida podes reservar",
+    "Cancelación sin penalidad 24 Hs antes de viajar",
+    "Te quedas más días o volves antes? Al regreso arreglamos los días extras o la devolución por los días menos",
+    "Atención las 24 Hs todos los días",
+  ],
+} = Astro.props as Props;
+---
+
+<section id="BENEFICIOS" class="w-full bg-[var(--bp-bg)] text-[var(--bp-ink)] py-14 lg:py-20">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
+    <p class="text-4xl font-bold tracking-wide text-[var(--bp-ink-muted)]">Beneficios</p>
+
+    <!-- FILA 1: grid 2 cols -->
+    <div class="grid gap-10 lg:grid-cols-2 items-center">
+      <!-- Col izquierda: UL (SIN bordes / fondos) -->
+      <div>
+        <ul class="space-y-4">
+          {fila1Items.map((txt) => (
+            <li class="flex gap-3 items-start py-2">
+              <span
+                class="mt-1 inline-grid place-items-center h-7 w-7 rounded-full bg-[var(--bp-primary)] text-white text-[15px] font-bold shrink-0"
+                aria-hidden="true"
+              >✓</span>
+              <span class="text-[var(--bp-ink-muted)] leading-relaxed text-[1.3rem]">{txt}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Col derecha: Carrusel (SIN bordes / fondos) -->
+      <div class="group relative overflow-hidden" role="region" aria-label="Galería">
+        <div
+          class="bp-carousel no-scrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
+          tabindex="0"
+          aria-live="polite"
+        >
+          {fila1Images.map((img) => (
+            <figure class="min-w-full snap-center">
+              <img
+                src={img.src}
+                alt={img.alt ?? "Imagen"}
+                class="block h-[320px] w-full object-cover rounded-2xl shadow-sm"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+          ))}
+        </div>
+
+        <!-- Controles -->
+        <button
+          type="button"
+          class="bp-prev text-4xl absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition rounded-full bg-[var(--bp-primary)]/90 text-white w-10 h-10 grid place-items-center shadow"
+          aria-label="Anterior"
+        >‹</button>
+        <button
+          type="button"
+          class="bp-next text-4xl absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition rounded-full bg-[var(--bp-primary)]/90 text-white w-10 h-10 grid place-items-center shadow"
+          aria-label="Siguiente"
+        >›</button>
+
+        <!-- Indicadores -->
+        <div class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+          {fila1Images.map((_, i) => (
+            <span class="bp-dot h-2.5 w-2.5 rounded-full bg-[var(--bp-border)]" data-idx={i}></span>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- FILA 2: título + lista (4 por línea) -->
+    <div>
+      <h3 class="text-2xl font-extrabold tracking-tight">{fila2Titulo}</h3>
+      <div class="mt-3 h-1 w-16 rounded-full bg-[var(--bp-accent)]"></div>
+      <ul class="mt-6 grid gap-y-3 gap-x-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {fila2Items.map((txt) => (
+          <li class="flex gap-3 items-start py-2">
+            <span class="mt-3 h-2.5 w-2.5 rounded-full bg-[var(--bp-primary-300)] shrink-0"></span>
+            <span class="text-[var(--bp-ink-muted)] leading-relaxed text-[1.3rem]">{txt}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- FILA 3: título + lista (4 por línea) -->
+    <div>
+      <h3 class="text-2xl font-extrabold tracking-tight">{fila3Titulo}</h3>
+      <div class="mt-3 h-1 w-16 rounded-full bg-[var(--bp-accent)]"></div>
+      <ul class="mt-6 grid gap-y-3 gap-x-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {fila3Items.map((txt) => (
+          <li class="flex gap-3 items-start">
+            <span class="mt-3 h-2.5 w-2.5 rounded-full bg-[var(--bp-primary-300)] shrink-0"></span>
+            <span class="text-[var(--bp-ink-muted)] leading-relaxed text-[1.3rem]">{txt}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+  </div>
+
+  <style>
+    /* ocultar barra de scroll horizontal del carrusel */
+    .no-scrollbar::-webkit-scrollbar{ display:none; }
+    .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
+    /* estado activo de dot (se actualiza por JS) */
+    .bp-dot.is-active{ background: var(--bp-primary); }
+  </style>
+
+  <script is:inline>
+    (function () {
+      const root = document.currentScript && document.currentScript.parentElement;
+      if (!root) return;
+
+      const track = root.querySelector('.bp-carousel');
+      const prev  = root.querySelector('.bp-prev');
+      const next  = root.querySelector('.bp-next');
+      const dots  = Array.from(root.querySelectorAll('.bp-dot'));
+      if (!track) return;
+
+      const slides = Array.from(track.children);
+      let idx = 0;
+
+      function go(i) {
+        if (!slides.length) return;
+        idx = (i + slides.length) % slides.length;
+        track.scrollTo({ left: slides[idx].offsetLeft, behavior: 'smooth' });
+        dots.forEach((d, j) => d.classList.toggle('is-active', j === idx));
+      }
+
+      prev && prev.addEventListener('click', () => go(idx - 1));
+      next && next.addEventListener('click', () => go(idx + 1));
+      dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
+
+      track.addEventListener('scroll', () => {
+        const center = track.scrollLeft + track.clientWidth / 2;
+        const i = slides.findIndex(sl =>
+          sl.offsetLeft <= center && (sl.offsetLeft + sl.clientWidth) > center
+        );
+        if (i >= 0 && i !== idx) {
+          idx = i;
+          dots.forEach((d, j) => d.classList.toggle('is-active', j === idx));
+        }
+      }, { passive: true });
+
+      go(0);
+    })();
+  </script>
+</section>

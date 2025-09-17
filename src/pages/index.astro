@@ -1,16 +1,217 @@
 ---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { t } from "../i18n";
+import HeroSlider from "../components/HeroSlider.astro";
+import { readPublicImagesCached } from "../lib/gallery-data";
 
+import Servicios from "../components/Servicio.astro";
+import Stats from "../components/Stats.astro";
+import ComoFunciona from "../components/ComoFunciona.astro";
+import FAQ from "../components/FAQ.astro";
+import Beneficios from "../components/Beneficios_v2.astro";
+import Precios from "../components/Precios.astro";
+import Nosotros from "../components/Nosotros.astro";
+import Contacto from "../components/Contacto.astro";
+import EstacionamientoCubierto from "../components/EstacionamientoCubierto.astro";
+
+const lang: "es" | "en" =
+  Astro.url.searchParams.get("lang") === "en" ? "en" : "es";
+
+const all = readPublicImagesCached("images");
+
+const hero = all.filter((i) => i.alt === "Hero");
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang={lang} class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Blue_Parking</title>
+    <meta name="description" content="Estacionamiento seguro y práctico." />
+  </head>
+  <body class="min-h-screen bg-white text-gray-900">
+    <SiteLayout
+      title="Blue_Parking — Estacionamiento"
+      description="Reservas simples, acceso rápido y seguridad 24/7."
+    >
+      <HeroSlider slot="full" items={hero}>
+        <!-- Overlay responsive -->
+        <div slot="overlay" class="relative">
+          <!-- Contenedor posicionado: top pegado al header en mobile; centrado en desktop -->
+          <div
+            class="inset-x-0
+             top-[calc(var(--nav-h,56px)+10px)]
+             md:top-1/3 md:-translate-y-1/2
+             flex flex-col items-center md:items-center gap-3 md:gap-6"
+          >
+            <!-- Placa luminosa detrás del H1 -->
+            <span class="relative inline-block">
+              <span
+                aria-hidden="true"
+                class="pointer-events-none absolute -inset-x-6 -inset-y-2 rounded-xl
+                 bg-white/14 backdrop-blur-[2px]
+                 ring-1 ring-white/25
+                 shadow-[0_6px_24px_rgba(0,0,0,.35),0_0_0_1px_rgba(255,255,255,.06)]"
+              ></span>
+
+              <h1
+                class="relative z-10 inline-block
+                 text-3xl md:text-6xl font-black leading-tight tracking-tight
+                 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,.55)] pb-1 md:pb-2"
+              >
+                <span class="text-[var(--bp-primary)]">Blue</span>Parking
+              </h1>
+            </span>
+
+            <!-- Subtítulo: centrado en mobile, sin forzar ancho; en desktop podés ajustar -->
+            <p
+              class="hero-chip mx-auto md:mx-0
+               text-lg md:text-3xl
+               text-center md:text-center
+               font-semibold leading-snug
+               px-4 md:px-6 py-2 md:py-3
+               rounded-xl bg-black/55 text-white
+               shadow-[0_8px_24px_rgba(0,0,0,.35)]"
+            >
+              ¿Viajas al exterior? Nosotros te cuidamos el vehículo
+            </p>
+
+            <!-- CTA (habilitamos pointer-events para que no bloquee el swipe del slider) -->
+            <a
+              href="/reservar"
+              class="pointer-events-auto mt-2 md:mt-4 hidden md:inline-flex items-center
+               rounded-md bg-[--bp-support] px-6 py-3 text-white font-semibold
+               hover:bg-[var(--bp-support-600)] transition shadow-sm"
+              data-cta-observer
+            >
+              Reserva
+            </a>
+          </div>
+          <a
+              href="/reservar"
+              class=" pointer-events-auto mx-[35%] mt-[95%] inline-flex md:hidden
+               rounded-md bg-[--bp-support] px-6 py-3 text-white font-semibold
+               hover:bg-[var(--bp-support-600)] transition shadow-sm"
+              data-cta-observer
+            >
+              Reserva
+            </a>
+        </div>
+        
+      </HeroSlider>
+
+      <style is:global>
+        /* Ajustá la altura real del header si la necesitás distinta */
+        :root {
+          --nav-h: 56px;
+        }
+        @media (min-width: 768px) {
+          :root {
+            --nav-h: 72px;
+          }
+        }
+      </style>
+
+      <main data-zebra class="mx-auto px-6">
+        <Servicios />
+
+        <svg
+          aria-hidden="true"
+          class="block w-full text-[var(--bp-bg-alt)]"
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="currentColor"
+            d="M0,32L80,42.7C160,53,320,75,480,74.7C640,75,800,53,960,42.7C1120,32,1280,32,1360,32L1440,32V80H0Z"
+          ></path>
+        </svg>
+
+        <ComoFunciona />
+
+        <svg
+          aria-hidden="true"
+          class="block w-full text-[var(--bp-bg-alt)]"
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+        >
+          <!-- flip X e Y: scale(-1,-1) + compensaciones del viewBox -->
+          <g transform="scale(-1,-1) translate(-1440,-80)">
+            <path
+              fill="currentColor"
+              d="M0,32L80,42.7C160,53,320,75,480,74.7C640,75,800,53,960,42.7C1120,32,1280,32,1360,32L1440,32V80H0Z"
+            ></path>
+          </g>
+        </svg>
+
+        <FAQ />
+
+        <svg
+          aria-hidden="true"
+          class="block w-full text-[var(--bp-bg-alt)]"
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="currentColor"
+            d="M0,32L80,42.7C160,53,320,75,480,74.7C640,75,800,53,960,42.7C1120,32,1280,32,1360,32L1440,32V80H0Z"
+          ></path>
+        </svg>
+        <Beneficios />
+        
+        <svg
+          aria-hidden="true"
+          class="block w-full text-[var(--bp-bg-alt)]"
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+        >
+          <!-- flip X e Y: scale(-1,-1) + compensaciones del viewBox -->
+          <g transform="scale(-1,-1) translate(-1440,-80)">
+            <path
+              fill="currentColor"
+              d="M0,32L80,42.7C160,53,320,75,480,74.7C640,75,800,53,960,42.7C1120,32,1280,32,1360,32L1440,32V80H0Z"
+            ></path>
+          </g>
+        </svg>
+        
+
+        <Precios />
+
+        
+
+         <svg
+          aria-hidden="true"
+          class="block w-full text-[var(--bp-bg-alt)]"
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="currentColor"
+            d="M0,32L80,42.7C160,53,320,75,480,74.7C640,75,800,53,960,42.7C1120,32,1280,32,1360,32L1440,32V80H0Z"
+          ></path>
+        </svg>
+
+
+
+        <Nosotros />
+
+       <svg
+          aria-hidden="true"
+          class="block w-full text-[var(--bp-bg-alt)]"
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+        >
+          <!-- flip X e Y: scale(-1,-1) + compensaciones del viewBox -->
+          <g transform="scale(-1,-1) translate(-1440,-80)">
+            <path
+              fill="currentColor"
+              d="M0,32L80,42.7C160,53,320,75,480,74.7C640,75,800,53,960,42.7C1120,32,1280,32,1360,32L1440,32V80H0Z"
+            ></path>
+          </g>
+        </svg>
+
+        <Contacto />
+      </main>
+    </SiteLayout>
+  </body>
 </html>
