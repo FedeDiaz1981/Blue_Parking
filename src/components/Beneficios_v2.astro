@@ -11,7 +11,7 @@ interface Props {
 }
 
 import img_1 from '../../public/images/Beneficios/01.jpeg';
-import img_2 from '../../public/images/Beneficios/02.jpeg';
+// import img_2 from '../../public/images/Beneficios/02.jpeg';
 
 const {
   fila1Items = [
@@ -21,7 +21,7 @@ const {
   ],
   fila1Images = [
     { src: img_1.src, alt: "Beneficios" },
-    { src: img_2.src, alt: "Beneficios" },
+    // { src: img_2.src, alt: "Beneficios" },
   ],
   fila2Titulo = "Medios de pago",
   fila2Items = [
@@ -59,45 +59,64 @@ const {
         </ul>
       </div>
 
-      <!-- Col derecha: Carrusel (SIN bordes / fondos) -->
-      <div class="group relative overflow-hidden" role="region" aria-label="Galería">
-        <div
-          class="bp-carousel no-scrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
-          tabindex="0"
-          aria-live="polite"
-        >
-          {fila1Images.map((img) => (
-            <figure class="min-w-full snap-center">
-              <img
-                src={img.src}
-                alt={img.alt ?? "Imagen"}
-                class="block h-[320px] w-full object-cover rounded-2xl shadow-sm"
-                loading="lazy"
-                decoding="async"
-              />
-            </figure>
-          ))}
-        </div>
+      <!-- Col derecha: Imagen única o Carrusel -->
+{fila1Images.length === 1 ? (
+  /* ====== Imagen ÚNICA con glow ====== */
+  <div class="relative">
+    <figure class="overflow-hidden rounded-2xl">
+      <img
+        src={fila1Images[0].src}
+        alt={fila1Images[0].alt ?? "Imagen"}
+        class="block h-[320px] w-full object-cover rounded-2xl transition
+               hover:scale-[1.01] hover:ring-4 hover:ring-[var(--bp-accent)]
+               hover:ring-offset-2 hover:ring-offset-[var(--bp-bg)]"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+  </div>
+) : (
+  /* ====== Carrusel (como estaba) ====== */
+  <div class="group relative overflow-hidden" role="region" aria-label="Galería">
+    <div
+      class="bp-carousel no-scrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
+      tabindex="0"
+      aria-live="polite"
+    >
+      {fila1Images.map((img) => (
+        <figure class="min-w-full snap-center">
+          <img
+            src={img.src}
+            alt={img.alt ?? "Imagen"}
+            class="block h-[320px] w-full object-cover rounded-2xl shadow-sm"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      ))}
+    </div>
 
-        <!-- Controles -->
-        <button
-          type="button"
-          class="bp-prev text-4xl absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition rounded-full bg-[var(--bp-primary)]/90 text-white w-10 h-10 grid place-items-center shadow"
-          aria-label="Anterior"
-        >‹</button>
-        <button
-          type="button"
-          class="bp-next text-4xl absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition rounded-full bg-[var(--bp-primary)]/90 text-white w-10 h-10 grid place-items-center shadow"
-          aria-label="Siguiente"
-        >›</button>
+    <!-- Controles -->
+    <button
+      type="button"
+      class="bp-prev text-4xl absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition rounded-full bg-[var(--bp-primary)]/90 text-white w-10 h-10 grid place-items-center shadow"
+      aria-label="Anterior"
+    >‹</button>
+    <button
+      type="button"
+      class="bp-next text-4xl absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition rounded-full bg-[var(--bp-primary)]/90 text-white w-10 h-10 grid place-items-center shadow"
+      aria-label="Siguiente"
+    >›</button>
 
-        <!-- Indicadores -->
-        <div class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-          {fila1Images.map((_, i) => (
-            <span class="bp-dot h-2.5 w-2.5 rounded-full bg-[var(--bp-border)]" data-idx={i}></span>
-          ))}
-        </div>
-      </div>
+    <!-- Indicadores -->
+    <div class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+      {fila1Images.map((_, i) => (
+        <span class="bp-dot h-2.5 w-2.5 rounded-full bg-[var(--bp-border)]" data-idx={i}></span>
+      ))}
+    </div>
+  </div>
+)}
+
     </div>
 
     <!-- FILA 2: título + lista (4 por línea) -->
@@ -130,14 +149,15 @@ const {
 
   </div>
 
-  <style>
-    /* ocultar barra de scroll horizontal del carrusel */
-    .no-scrollbar::-webkit-scrollbar{ display:none; }
-    .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
-    /* estado activo de dot (se actualiza por JS) */
-    .bp-dot.is-active{ background: var(--bp-primary); }
-  </style>
+ <style>
+  /* ocultar barra de scroll horizontal del carrusel */
+  .no-scrollbar::-webkit-scrollbar{ display:none; }
+  .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
+  /* estado activo de dot (se actualiza por JS) */
+  .bp-dot.is-active{ background: var(--bp-primary); }
+</style>
 
+{fila1Images.length > 1 && (
   <script is:inline>
     (function () {
       const root = document.currentScript && document.currentScript.parentElement;
@@ -177,4 +197,6 @@ const {
       go(0);
     })();
   </script>
+)}
+
 </section>
