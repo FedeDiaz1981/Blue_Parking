@@ -1,7 +1,7 @@
 [
-  { "desde": 1, "hasta": 6, "valor": 20000 },
-  { "desde": 7, "hasta": 13, "valor": 14800 },
-  { "desde": 14, "hasta": 20, "valor": 12500 },
-  { "desde": 21, "hasta": 29, "valor": 11000 },
+  { "desde": 1, "hasta": 7, "valor": 14800 },
+  { "desde": 8, "hasta": 13, "valor": 12500 },
+  { "desde": 14, "hasta": 20, "valor": 11000 },
+  { "desde": 21, "hasta": 29, "valor": 10000 },
   { "desde": 30, "hasta": 1000000, "valor": 10000 }
 ]
