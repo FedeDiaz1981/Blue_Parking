@@ -6,7 +6,7 @@ interface Props {
   class?: string;
 }
 const {
-  href = "/reservar",
+  href = "#",
   label = "Reservá ahora",
   whatsappHref,
   class: extra = "",
@@ -27,6 +27,7 @@ const {
       <div class="flex items-center gap-2 p-2">
         <a
           href={href}
+          data-reserva-open
           class="flex-1 rounded-full px-5 py-3 text-center font-semibold
                  bg-[var(--bp-accent)] hover:bg-[var(--bp-accent-600)]
                  text-[#111] transition-colors"

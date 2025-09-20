@@ -1,0 +1,253 @@
+---
+import tarifas from "../data/tarifas.json";
+
+interface Props {
+  whatsapp?: string;   // 5491122334455
+  minDias?: number;    // mínimo a cobrar
+  triggerText?: string;
+}
+
+const {
+  whatsapp = "5491122334455",
+  minDias = 1,
+  triggerText = "Calcular reserva",
+} = Astro.props;
+
+const HORAS = Array.from({ length: 24 }, (_, i) => i); // 0..23
+const MINUTOS = [0, 15, 30, 45];
+---
+
+<button
+  data-reserva-open
+  class="hidden rounded-md bg-[var(--bp-primary)] text-white font-semibold px-5 py-3 shadow hover:opacity-90 transition"
+>
+  {triggerText}
+</button>
+
+<dialog id="reserva-modal" class="bp-modal" data-min-dias={minDias} data-whatsapp={whatsapp}>
+  <div class="panel relative w-[min(720px,92vw)] rounded-2xl bg-[var(--bp-surface)] text-[var(--bp-ink)] p-6 sm:p-8 shadow-xl transition">
+    <button type="button" data-close class="absolute right-4 top-4 h-9 w-9 grid place-items-center rounded-full border border-[var(--bp-border)] hover:bg-[var(--bp-bg)]" aria-label="Cerrar">✕</button>
+
+    <!-- Paso 1 -->
+    <section data-step="form">
+      <h2 class="text-2xl font-bold">Calculá tu reserva</h2>
+      <p class="mt-1 text-[var(--bp-ink-muted)]">Ingresá fecha y hora de inicio/fin. Se cuentan días completos de 24 h. Mínimo {minDias} día(s).</p>
+
+      <form class="mt-5 grid gap-4 sm:grid-cols-2" id="form-reserva">
+        <!-- Desde -->
+        <div class="col-span-full text-sm font-semibold text-[var(--bp-ink-muted)]">Desde</div>
+
+        <label class="flex items-center gap-3 rounded-xl border border-[var(--bp-border)] bg-[var(--bp-bg)] px-4 py-3">
+          <span class="min-w-16 text-sm">Fecha</span>
+          <input type="date" name="startDate" required class="flex-1 bg-transparent outline-none" />
+        </label>
+
+        <div class="flex items-center gap-3 rounded-xl border border-[var(--bp-border)] bg-[var(--bp-bg)] px-4 py-3">
+          <span class="min-w-16 text-sm">Hora</span>
+          <select name="startHour" required class="bg-transparent outline-none">
+            <option value="" disabled selected>HH</option>
+            {HORAS.map(h => <option value={h}>{String(h).padStart(2,'0')}</option>)}
+          </select>
+          :
+          <select name="startMin" required class="bg-transparent outline-none">
+            <option value="" disabled selected>MM</option>
+            {MINUTOS.map(m => <option value={m}>{String(m).padStart(2,'0')}</option>)}
+          </select>
+        </div>
+
+        <!-- Hasta -->
+        <div class="col-span-full mt-2 text-sm font-semibold text-[var(--bp-ink-muted)]">Hasta</div>
+
+        <label class="flex items-center gap-3 rounded-xl border border-[var(--bp-border)] bg-[var(--bp-bg)] px-4 py-3">
+          <span class="min-w-16 text-sm">Fecha</span>
+          <input type="date" name="endDate" required class="flex-1 bg-transparent outline-none" />
+        </label>
+
+        <div class="flex items-center gap-3 rounded-xl border border-[var(--bp-border)] bg-[var(--bp-bg)] px-4 py-3">
+          <span class="min-w-16 text-sm">Hora</span>
+          <select name="endHour" required class="bg-transparent outline-none">
+            <option value="" disabled selected>HH</option>
+            {HORAS.map(h => <option value={h}>{String(h).padStart(2,'0')}</option>)}
+          </select>
+          :
+          <select name="endMin" required class="bg-transparent outline-none">
+            <option value="" disabled selected>MM</option>
+            {MINUTOS.map(m => <option value={m}>{String(m).padStart(2,'0')}</option>)}
+          </select>
+        </div>
+
+        <div class="col-span-full">
+          <button type="submit" class="w-full rounded-md bg-[var(--bp-primary)] text-white font-semibold px-6 py-3 shadow hover:opacity-90 transition">Calcular reserva</button>
+        </div>
+
+        <p data-error class="col-span-full hidden rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-800"></p>
+      </form>
+    </section>
+
+    <!-- Paso 2 -->
+    <section data-step="summary" class="hidden">
+      <h2 class="text-2xl font-bold">Resumen de tu reserva</h2>
+
+      <div class="mt-4 space-y-3 text-[15px] sm:text-base">
+        <p><strong>Retiro en Ezeiza:</strong> <span data-out="inicio"></span></p>
+        <p><strong>Entrega en Ezeiza:</strong> <span data-out="fin"></span></p>
+        <p><strong>Días contratados:</strong> <span data-out="dias"></span></p>
+        <p><strong>Total a pagar:</strong> <span data-out="total"></span> <span class="text-[var(--bp-ink-muted)]">(Valor mínimo {minDias} día{minDias>1?'s':''})</span></p>
+        <p class="text-[var(--bp-ink-muted)]">El precio queda sujeto a variaciones de tarifas al momento de dejar el vehículo.</p>
+      </div>
+
+      <div class="mt-6 grid gap-3 sm:grid-cols-2">
+        <a data-wa href="#" target="_blank" rel="noopener" class="rounded-md border-2 border-[var(--bp-accent)] bg-[var(--bp-accent)]/10 px-6 py-3 text-center font-semibold hover:scale-[1.01] transition">Reservar</a>
+        <button type="button" data-back class="rounded-md border border-[var(--bp-border)] px-6 py-3 text-center font-semibold hover:bg-[var(--bp-bg)] transition">Volver a calcular</button>
+      </div>
+    </section>
+  </div>
+
+  <style>
+    .bp-modal{ border:0; padding:0; background:transparent }
+    .bp-modal::backdrop{ background:rgba(0,0,0,.45) }
+    .bp-modal[open] .panel{ opacity:1; transform: scale(1) translateY(0) }
+    .panel{ opacity:0; transform: scale(.98) translateY(6px) }
+  </style>
+
+  <!-- IMPORTANTE: usamos define:vars para pasar "tarifas" al JS del cliente -->
+  <script is:inline define:vars={{ tarifas }}>
+    const modal = document.getElementById("reserva-modal");
+
+    // ====== TARIFAS (vienen directo del servidor) ======
+    const TARIFAS_RAW = tarifas; // ya es un array JS
+
+    // --- helpers ---
+    const toInt = (v) => { if (typeof v === "number") return Math.trunc(v); return Number(String(v).replace(/\D/g,""))||0; };
+
+    function normalizarTarifas(raw){
+      const base = Array.isArray(raw) ? raw
+                 : (raw && typeof raw==="object") ? (Object.values(raw).find(v=>Array.isArray(v))||[])
+                 : [];
+      const out = base.map(r=>{
+        if (Array.isArray(r)) return [toInt(r[0]), toInt(r[1]), toInt(r[2])];
+        if (r && typeof r==="object"){
+          const d = toInt(r.desde ?? r.diaDesde ?? r.min ?? r[0]);
+          const h = toInt(r.hasta ?? r.diaHasta ?? r.max ?? r[1]);
+          const v = toInt(r.valor ?? r.precio ?? r.rate ?? r[2]);
+          return [d,h,v];
+        }
+        return [NaN,NaN,NaN];
+      }).filter(([d,h,v])=>Number.isFinite(d)&&Number.isFinite(h)&&Number.isFinite(v)&&d>0&&h>=d&&v>0)
+        .sort((a,b)=>a[0]-b[0]);
+      return out;
+    }
+
+    const TARIFAS = normalizarTarifas(TARIFAS_RAW);
+    const MIN_DIAS = Number(modal?.dataset.minDias || "1");
+    const WHATSAPP = modal?.dataset.whatsapp || "";
+
+    const nf   = new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS"});
+    const fmtDT= (d)=>d.toLocaleString("es-AR",{dateStyle:"short",timeStyle:"short"});
+
+    function parseInputs(fd){
+      const sd=fd.get("startDate"), sh=fd.get("startHour"), sm=fd.get("startMin");
+      const ed=fd.get("endDate"),   eh=fd.get("endHour"),   em=fd.get("endMin");
+      if(!sd||!sh||!sm||!ed||!eh||!em) return null;
+      const hh=(x)=>String(x).padStart(2,"0");
+      return {
+        start:new Date(`${sd}T${hh(sh)}:${hh(sm)}:00`),
+        end:  new Date(`${ed}T${hh(eh)}:${hh(em)}:00`)
+      };
+    }
+
+    // floor(24h), mínimo MIN_DIAS
+    function diasCobrados(start,end){
+      const diff=end-start;
+      if(isNaN(diff)||diff<=0) return 0;
+      const d=Math.floor(diff/(24*60*60*1000));
+      return Math.max(d,MIN_DIAS);
+    }
+
+    function precioPorDia(dias){
+      for (const [desde,hasta,valor] of TARIFAS){
+        if (dias>=desde && dias<=hasta) return valor;
+      }
+      return TARIFAS.length ? TARIFAS[TARIFAS.length-1][2] : 0;
+    }
+
+    const form=modal.querySelector("#form-reserva");
+    const errEl=modal.querySelector("[data-error]");
+    const stepForm=modal.querySelector('[data-step="form"]');
+    const stepSum=modal.querySelector('[data-step="summary"]');
+    const out=(k)=>modal.querySelector(`[data-out="${k}"]`);
+    const btnBack=modal.querySelector("[data-back]");
+    const btnClose=modal.querySelector("[data-close]");
+    const aWa=modal.querySelector("[data-wa]");
+
+    document.addEventListener("click",(e)=>{
+      const b=e.target.closest("[data-reserva-open]");
+      if(!b) return;
+      e.preventDefault();
+      form.reset();
+      errEl.classList.add("hidden"); errEl.textContent="";
+      stepForm.classList.remove("hidden");
+      stepSum.classList.add("hidden");
+      modal.showModal();
+    });
+
+    btnClose?.addEventListener("click",()=>modal.close());
+    btnBack ?.addEventListener("click",()=>{ stepSum.classList.add("hidden"); stepForm.classList.remove("hidden"); });
+
+    form.addEventListener("submit",(e)=>{
+      e.preventDefault();
+
+      if (!TARIFAS.length){
+        errEl.textContent="No hay tarifas configuradas. Revisá src/data/tarifas.json.";
+        errEl.classList.remove("hidden");
+        return;
+      }
+
+      const data=new FormData(form);
+      const parsed=parseInputs(data);
+      if(!parsed) return;
+
+      const {start,end}=parsed;
+      if(!(end>start)){
+        errEl.textContent="La fecha/hora de fin debe ser posterior al inicio.";
+        errEl.classList.remove("hidden");
+        return;
+      }
+      errEl.classList.add("hidden"); errEl.textContent="";
+
+      const dias=diasCobrados(start,end);
+      if(dias===0){
+        errEl.textContent="La diferencia debe ser mayor a 0 horas.";
+        errEl.classList.remove("hidden");
+        return;
+      }
+
+      const pxd=precioPorDia(dias);
+      if(!Number.isFinite(pxd)||pxd<=0){
+        errEl.textContent=`No se encontró tarifa para ${dias} día(s). Revisá tus rangos.`;
+        errEl.classList.remove("hidden");
+        return;
+      }
+
+      const total=pxd*dias;
+
+      out("inicio").textContent=fmtDT(start);
+      out("fin").textContent=fmtDT(end);
+      out("dias").textContent=String(dias);
+      out("total").textContent=nf.format(total);
+
+      const msg=[
+        "Reserva de cochera",
+        `Retiro: ${fmtDT(start)}`,
+        `Entrega: ${fmtDT(end)}`,
+        `Días contratados: ${dias}`,
+        `Tarifa por día: ${nf.format(pxd)}`,
+        `Total: ${nf.format(total)}`
+      ].join("\n");
+      aWa.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+
+      stepForm.classList.add("hidden");
+      stepSum.classList.remove("hidden");
+    });
+  </script>
+</dialog>

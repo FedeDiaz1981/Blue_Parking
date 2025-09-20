@@ -7,6 +7,7 @@ import whatsapp from "../../public/whatsapp.png";
 import StickyBookBar from "../components/StickyBookBar.astro";
 import StickyCTA from "../components/src/components/StickyCTA.astro";
 import Footer from "../components/Footer.astro";
+import ReservaModal from "../components/ReservaModal.astro";
 
 const {
   title = "Blue_Parking",
@@ -43,7 +44,7 @@ const {
         { href: "#NOSOTROS", label: "Nosotros" },
         { href: "#CONTACTO", label: "Contacto" },
       ]}
-      cta={{ href: "/reservar", label: "Reserva" }}
+      cta={{ href: "#", label: "Reserva" }}
     />
     <StickyBookBar />
     {/* full-bleed pegado bajo el header (header = h-16 = 64px) */}
@@ -69,7 +70,8 @@ const {
       />
     </a>
     <StickyCTA
-      href="/reservar"
+      href="#"
+      data-reserva-open
       whatsappHref="https://wa.me/541136000205?text=%C2%A1Hola!%20Quiero%20reservar%20una%20cochera."
     />
     <Footer
@@ -79,6 +81,8 @@ const {
       logoSrc={logoST.src}
       privacyHref="/privacidad"
     />
+    <ReservaModal whatsapp="5491162851665" minDias={1} />
+    
     <script is:inline>
       const io = new IntersectionObserver(
         (es) =>
