@@ -110,15 +110,20 @@ const MINUTOS = [0, 15, 30, 45];
     .panel{ opacity:0; transform: scale(.98) translateY(6px) }
   </style>
 
-  <!-- IMPORTANTE: usamos define:vars para pasar "tarifas" al JS del cliente -->
+  <!-- Pasamos "tarifas" al JS del cliente -->
   <script is:inline define:vars={{ tarifas }}>
     const modal = document.getElementById("reserva-modal");
 
-    // ====== TARIFAS (vienen directo del servidor) ======
-    const TARIFAS_RAW = tarifas; // ya es un array JS
+    // ====== TARIFAS (directo del servidor) ======
+    const TARIFAS_RAW = tarifas;
 
     // --- helpers ---
     const toInt = (v) => { if (typeof v === "number") return Math.trunc(v); return Number(String(v).replace(/\D/g,""))||0; };
+    const pad2  = (n) => String(n).padStart(2,"0");
+    const todayStr = () => {
+      const d = new Date();
+      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    };
 
     function normalizarTarifas(raw){
       const base = Array.isArray(raw) ? raw
@@ -149,21 +154,20 @@ const MINUTOS = [0, 15, 30, 45];
       const sd=fd.get("startDate"), sh=fd.get("startHour"), sm=fd.get("startMin");
       const ed=fd.get("endDate"),   eh=fd.get("endHour"),   em=fd.get("endMin");
       if(!sd||!sh||!sm||!ed||!eh||!em) return null;
-      const hh=(x)=>String(x).padStart(2,"0");
       return {
-        start:new Date(`${sd}T${hh(sh)}:${hh(sm)}:00`),
-        end:  new Date(`${ed}T${hh(eh)}:${hh(em)}:00`)
+        start:new Date(`${sd}T${pad2(sh)}:${pad2(sm)}:00`),
+        end:  new Date(`${ed}T${pad2(eh)}:${pad2(em)}:00`)
       };
     }
 
-    // floor(24h), mínimo MIN_DIAS
-    function diasCobrados(start,end){
+    // DÍAS EFECTIVOS (floor de 24h, sin mínimo)
+    function diasEfectivos(start,end){
       const diff=end-start;
       if(isNaN(diff)||diff<=0) return 0;
-      const d=Math.floor(diff/(24*60*60*1000));
-      return Math.max(d,MIN_DIAS);
+      return Math.floor(diff/(24*60*60*1000));
     }
 
+    // Precio por día según los días *cobrados*
     function precioPorDia(dias){
       for (const [desde,hasta,valor] of TARIFAS){
         if (dias>=desde && dias<=hasta) return valor;
@@ -171,6 +175,7 @@ const MINUTOS = [0, 15, 30, 45];
       return TARIFAS.length ? TARIFAS[TARIFAS.length-1][2] : 0;
     }
 
+    // ====== Restricciones de fecha/hora ======
     const form=modal.querySelector("#form-reserva");
     const errEl=modal.querySelector("[data-error]");
     const stepForm=modal.querySelector('[data-step="form"]');
@@ -180,6 +185,93 @@ const MINUTOS = [0, 15, 30, 45];
     const btnClose=modal.querySelector("[data-close]");
     const aWa=modal.querySelector("[data-wa]");
 
+    const startDate = form.querySelector('input[name="startDate"]');
+    const startHour = form.querySelector('select[name="startHour"]');
+    const startMin  = form.querySelector('select[name="startMin"]');
+    const endDate   = form.querySelector('input[name="endDate"]');
+    const endHour   = form.querySelector('select[name="endHour"]');
+    const endMin    = form.querySelector('select[name="endMin"]');
+
+    function disableOptions(select, predicate){
+      for (const opt of select.options){
+        if (!opt.value) continue; // placeholder
+        const n = Number(opt.value);
+        opt.disabled = predicate(n);
+      }
+      // si la opción seleccionada quedó deshabilitada, elegí la primera válida
+      const sel = select.selectedOptions[0];
+      if (sel && sel.disabled){
+        const first = Array.from(select.options).find(o=>o.value && !o.disabled);
+        select.value = first ? first.value : "";
+      }
+    }
+
+    function refreshStartConstraints(){
+      // min de fecha "desde" = hoy
+      startDate.min = todayStr();
+
+      const now = new Date();
+      const isToday = startDate.value === todayStr();
+
+      if (isToday){
+        // bloqueá horas < hora actual
+        const hNow = now.getHours();
+        disableOptions(startHour, (h)=>h < hNow);
+
+        // si misma hora, bloqueá minutos < minuto actual redondeado al salto siguiente de 15
+        const next15 = Math.ceil(now.getMinutes()/15)*15; // 0,15,30,45 o 60
+        if (Number(startHour.value) === hNow){
+          disableOptions(startMin, (m)=>m < Math.min(next15,45));
+          // si next15 = 60, no hay minutos válidos en esta hora -> forzá avanzar hora
+          if (next15 >= 60){
+            // buscá siguiente hora habilitada
+            const nextHour = Array.from(startHour.options).find(o=>o.value && !o.disabled && Number(o.value) > hNow);
+            if (nextHour){
+              startHour.value = nextHour.value;
+              disableOptions(startMin, ()=>false); // todos válidos
+            }
+          }
+        } else {
+          disableOptions(startMin, ()=>false);
+        }
+      } else {
+        // fecha futura: todo habilitado
+        disableOptions(startHour, ()=>false);
+        disableOptions(startMin,  ()=>false);
+      }
+      // endDate no puede ser anterior a startDate
+      if (startDate.value) {
+        endDate.min = startDate.value;
+        if (endDate.value && endDate.value < startDate.value) endDate.value = startDate.value;
+      }
+      refreshEndConstraints();
+    }
+
+    function refreshEndConstraints(){
+      if (!startDate.value){
+        // sin inicio, no limites en fin (además endDate.min se setea al abrir)
+        return;
+      }
+      endDate.min = startDate.value;
+      const sameDay = endDate.value && endDate.value === startDate.value;
+
+      if (sameDay){
+        const hMin = Number(startHour.value || -1);
+        const mMin = Number(startMin.value  || -1);
+
+        disableOptions(endHour, (h)=> h < hMin);
+        if (Number(endHour.value) === hMin){
+          disableOptions(endMin, (m)=> m < mMin);
+        } else {
+          disableOptions(endMin, ()=>false);
+        }
+      } else {
+        disableOptions(endHour, ()=>false);
+        disableOptions(endMin,  ()=>false);
+      }
+    }
+
+    // Abrir desde cualquier botón con data-reserva-open
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("[data-reserva-open]");
       if(!b) return;
@@ -188,12 +280,38 @@ const MINUTOS = [0, 15, 30, 45];
       errEl.classList.add("hidden"); errEl.textContent="";
       stepForm.classList.remove("hidden");
       stepSum.classList.add("hidden");
+
+      // inicializar límites
+      startDate.min = todayStr();
+      endDate.min   = todayStr();
+      refreshStartConstraints();
+      refreshEndConstraints();
+
       modal.showModal();
+    });
+
+    // listeners de cambios para aplicar restricciones en vivo
+    startDate.addEventListener('change', ()=>{
+      refreshStartConstraints();
+    });
+    startHour.addEventListener('change', ()=>{
+      refreshStartConstraints();
+    });
+    startMin.addEventListener('change', ()=>{
+      refreshStartConstraints();
+    });
+
+    endDate.addEventListener('change', ()=>{
+      refreshEndConstraints();
+    });
+    endHour.addEventListener('change', ()=>{
+      refreshEndConstraints();
     });
 
     btnClose?.addEventListener("click",()=>modal.close());
     btnBack ?.addEventListener("click",()=>{ stepSum.classList.add("hidden"); stepForm.classList.remove("hidden"); });
 
+    // ===== Submit / cálculo =====
     form.addEventListener("submit",(e)=>{
       e.preventDefault();
 
@@ -204,47 +322,72 @@ const MINUTOS = [0, 15, 30, 45];
       }
 
       const data=new FormData(form);
-      const parsed=parseInputs(data);
+      const parsed = parseInputs(data);
       if(!parsed) return;
 
       const {start,end}=parsed;
-      if(!(end>start)){
-        errEl.textContent="La fecha/hora de fin debe ser posterior al inicio.";
+
+      // VALIDACIONES extra: inicio >= ahora, fin > inicio
+      const now = new Date();
+      if (start < now){
+        errEl.textContent = "La fecha/hora de inicio no puede ser anterior al momento actual.";
         errEl.classList.remove("hidden");
         return;
       }
+      if (!(end > start)){
+        errEl.textContent = "La fecha/hora de fin debe ser posterior al inicio.";
+        errEl.classList.remove("hidden");
+        return;
+      }
+      // si mismo día, bloquear por si el usuario cambió selects muy rápido
+      if (startDate.value === endDate.value){
+        const sh = Number(startHour.value), sm = Number(startMin.value);
+        const eh = Number(endHour.value),   em = Number(endMin.value);
+        if (eh < sh || (eh === sh && em <= sm)){
+          errEl.textContent = "La hora de fin debe ser posterior a la hora de inicio.";
+          errEl.classList.remove("hidden");
+          return;
+        }
+      }
+
       errEl.classList.add("hidden"); errEl.textContent="";
 
-      const dias=diasCobrados(start,end);
-      if(dias===0){
-        errEl.textContent="La diferencia debe ser mayor a 0 horas.";
-        errEl.classList.remove("hidden");
-        return;
-      }
+      // 1) días efectivos
+      const diasReal = diasEfectivos(start,end);
 
-      const pxd=precioPorDia(dias);
+      // 2) días cobrados (aplica mínimo)
+      const diasCobr = Math.max(diasReal, MIN_DIAS);
+
+      const pxd = precioPorDia(diasCobr);
       if(!Number.isFinite(pxd)||pxd<=0){
-        errEl.textContent=`No se encontró tarifa para ${dias} día(s). Revisá tus rangos.`;
+        errEl.textContent=`No se encontró tarifa para ${diasCobr} día(s). Revisá tus rangos.`;
         errEl.classList.remove("hidden");
         return;
       }
 
-      const total=pxd*dias;
+      const total = pxd * diasCobr;
 
-      out("inicio").textContent=fmtDT(start);
-      out("fin").textContent=fmtDT(end);
-      out("dias").textContent=String(dias);
-      out("total").textContent=nf.format(total);
+      // Salida
+      out("inicio").textContent = fmtDT(start);
+      out("fin").textContent    = fmtDT(end);
+      out("dias").textContent   = diasReal < MIN_DIAS
+        ? `${diasReal} (se cobra ${diasCobr})`
+        : String(diasReal);
+      out("total").textContent  = nf.format(total);
 
-      const msg=[
+      // WhatsApp
+      const lineas = [
         "Reserva de cochera",
         `Retiro: ${fmtDT(start)}`,
         `Entrega: ${fmtDT(end)}`,
-        `Días contratados: ${dias}`,
+        `Días efectivos: ${diasReal}`,
+        `Días cobrados: ${diasCobr}`,
         `Tarifa por día: ${nf.format(pxd)}`,
         `Total: ${nf.format(total)}`
-      ].join("\n");
-      aWa.href=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+      ];
+      if (diasCobr > diasReal) lineas.splice(4,0,`Mínimo aplicado: ${MIN_DIAS} día(s)`);
+
+      aWa.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lineas.join("\n"))}`;
 
       stepForm.classList.add("hidden");
       stepSum.classList.remove("hidden");
