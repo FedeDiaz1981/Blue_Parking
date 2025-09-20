@@ -92,7 +92,17 @@ const MINUTOS = [0, 15, 30, 45];
         <p><strong>Retiro en Ezeiza:</strong> <span data-out="inicio"></span></p>
         <p><strong>Entrega en Ezeiza:</strong> <span data-out="fin"></span></p>
         <p><strong>Días contratados:</strong> <span data-out="dias"></span></p>
-        <p><strong>Total a pagar:</strong> <span data-out="total"></span> <span class="text-[var(--bp-ink-muted)]">(Valor mínimo {minDias} día{minDias>1?'s':''})</span></p>
+
+        <!-- Mostramos total final (con descuento si aplica) -->
+        <p>
+          <strong>Total a pagar:</strong>
+          <span data-out="total"></span>
+          <span class="text-[var(--bp-ink-muted)]">(Valor mínimo {minDias} día{minDias>1?'s':''})</span>
+        </p>
+
+        <!-- Línea informativa opcional de descuento -->
+        <p data-desc-info class="hidden text-[var(--bp-ink-muted)]"></p>
+
         <p class="text-[var(--bp-ink-muted)]">El precio queda sujeto a variaciones de tarifas al momento de dejar el vehículo.</p>
       </div>
 
@@ -125,19 +135,25 @@ const MINUTOS = [0, 15, 30, 45];
       return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
     };
 
+    // ✅ normaliza incluyendo DESCUENTO (cuarto valor)
     function normalizarTarifas(raw){
       const base = Array.isArray(raw) ? raw
                  : (raw && typeof raw==="object") ? (Object.values(raw).find(v=>Array.isArray(v))||[])
                  : [];
       const out = base.map(r=>{
-        if (Array.isArray(r)) return [toInt(r[0]), toInt(r[1]), toInt(r[2])];
+        if (Array.isArray(r)) {
+          // [desde, hasta, valor, descuento?]
+          const d = toInt(r[0]), h = toInt(r[1]), v = toInt(r[2]), desc = toInt(r[3] ?? 0);
+          return [d,h,v,desc];
+        }
         if (r && typeof r==="object"){
           const d = toInt(r.desde ?? r.diaDesde ?? r.min ?? r[0]);
           const h = toInt(r.hasta ?? r.diaHasta ?? r.max ?? r[1]);
           const v = toInt(r.valor ?? r.precio ?? r.rate ?? r[2]);
-          return [d,h,v];
+          const desc = toInt(r.descuento ?? r.discount ?? 0);
+          return [d,h,v,desc];
         }
-        return [NaN,NaN,NaN];
+        return [NaN,NaN,NaN,NaN];
       }).filter(([d,h,v])=>Number.isFinite(d)&&Number.isFinite(h)&&Number.isFinite(v)&&d>0&&h>=d&&v>0)
         .sort((a,b)=>a[0]-b[0]);
       return out;
@@ -167,12 +183,16 @@ const MINUTOS = [0, 15, 30, 45];
       return Math.floor(diff/(24*60*60*1000));
     }
 
-    // Precio por día según los días *cobrados*
-    function precioPorDia(dias){
-      for (const [desde,hasta,valor] of TARIFAS){
-        if (dias>=desde && dias<=hasta) return valor;
+    // ✅ devuelve precio por día y descuento del rango
+    function precioYDesc(dias){
+      for (const [desde,hasta,valor,desc=0] of TARIFAS){
+        if (dias>=desde && dias<=hasta) return { valor, desc };
       }
-      return TARIFAS.length ? TARIFAS[TARIFAS.length-1][2] : 0;
+      if (TARIFAS.length){
+        const [,,valor,desc=0] = TARIFAS[TARIFAS.length-1];
+        return { valor, desc };
+      }
+      return { valor:0, desc:0 };
     }
 
     // ====== Restricciones de fecha/hora ======
@@ -181,6 +201,7 @@ const MINUTOS = [0, 15, 30, 45];
     const stepForm=modal.querySelector('[data-step="form"]');
     const stepSum=modal.querySelector('[data-step="summary"]');
     const out=(k)=>modal.querySelector(`[data-out="${k}"]`);
+    const descInfo = modal.querySelector("[data-desc-info]");
     const btnBack=modal.querySelector("[data-back]");
     const btnClose=modal.querySelector("[data-close]");
     const aWa=modal.querySelector("[data-wa]");
@@ -194,11 +215,10 @@ const MINUTOS = [0, 15, 30, 45];
 
     function disableOptions(select, predicate){
       for (const opt of select.options){
-        if (!opt.value) continue; // placeholder
+        if (!opt.value) continue;
         const n = Number(opt.value);
         opt.disabled = predicate(n);
       }
-      // si la opción seleccionada quedó deshabilitada, elegí la primera válida
       const sel = select.selectedOptions[0];
       if (sel && sel.disabled){
         const first = Array.from(select.options).find(o=>o.value && !o.disabled);
@@ -207,39 +227,32 @@ const MINUTOS = [0, 15, 30, 45];
     }
 
     function refreshStartConstraints(){
-      // min de fecha "desde" = hoy
       startDate.min = todayStr();
 
       const now = new Date();
       const isToday = startDate.value === todayStr();
 
       if (isToday){
-        // bloqueá horas < hora actual
         const hNow = now.getHours();
         disableOptions(startHour, (h)=>h < hNow);
 
-        // si misma hora, bloqueá minutos < minuto actual redondeado al salto siguiente de 15
-        const next15 = Math.ceil(now.getMinutes()/15)*15; // 0,15,30,45 o 60
+        const next15 = Math.ceil(now.getMinutes()/15)*15;
         if (Number(startHour.value) === hNow){
           disableOptions(startMin, (m)=>m < Math.min(next15,45));
-          // si next15 = 60, no hay minutos válidos en esta hora -> forzá avanzar hora
           if (next15 >= 60){
-            // buscá siguiente hora habilitada
             const nextHour = Array.from(startHour.options).find(o=>o.value && !o.disabled && Number(o.value) > hNow);
             if (nextHour){
               startHour.value = nextHour.value;
-              disableOptions(startMin, ()=>false); // todos válidos
+              disableOptions(startMin, ()=>false);
             }
           }
         } else {
           disableOptions(startMin, ()=>false);
         }
       } else {
-        // fecha futura: todo habilitado
         disableOptions(startHour, ()=>false);
         disableOptions(startMin,  ()=>false);
       }
-      // endDate no puede ser anterior a startDate
       if (startDate.value) {
         endDate.min = startDate.value;
         if (endDate.value && endDate.value < startDate.value) endDate.value = startDate.value;
@@ -248,10 +261,7 @@ const MINUTOS = [0, 15, 30, 45];
     }
 
     function refreshEndConstraints(){
-      if (!startDate.value){
-        // sin inicio, no limites en fin (además endDate.min se setea al abrir)
-        return;
-      }
+      if (!startDate.value) return;
       endDate.min = startDate.value;
       const sameDay = endDate.value && endDate.value === startDate.value;
 
@@ -271,17 +281,17 @@ const MINUTOS = [0, 15, 30, 45];
       }
     }
 
-    // Abrir desde cualquier botón con data-reserva-open
+    // Abrir modal
     document.addEventListener("click",(e)=>{
       const b=e.target.closest("[data-reserva-open]");
       if(!b) return;
       e.preventDefault();
       form.reset();
       errEl.classList.add("hidden"); errEl.textContent="";
+      descInfo?.classList.add("hidden"); if (descInfo) descInfo.textContent="";
       stepForm.classList.remove("hidden");
       stepSum.classList.add("hidden");
 
-      // inicializar límites
       startDate.min = todayStr();
       endDate.min   = todayStr();
       refreshStartConstraints();
@@ -290,24 +300,12 @@ const MINUTOS = [0, 15, 30, 45];
       modal.showModal();
     });
 
-    // listeners de cambios para aplicar restricciones en vivo
-    startDate.addEventListener('change', ()=>{
-      refreshStartConstraints();
-    });
-    startHour.addEventListener('change', ()=>{
-      refreshStartConstraints();
-    });
-    startMin.addEventListener('change', ()=>{
-      refreshStartConstraints();
-    });
-
-    endDate.addEventListener('change', ()=>{
-      refreshEndConstraints();
-    });
-    endHour.addEventListener('change', ()=>{
-      refreshEndConstraints();
-    });
-
+    // listeners restricciones
+    startDate.addEventListener('change', refreshStartConstraints);
+    startHour.addEventListener('change', refreshStartConstraints);
+    startMin .addEventListener('change', refreshStartConstraints);
+    endDate  .addEventListener('change', refreshEndConstraints);
+    endHour  .addEventListener('change', refreshEndConstraints);
     btnClose?.addEventListener("click",()=>modal.close());
     btnBack ?.addEventListener("click",()=>{ stepSum.classList.add("hidden"); stepForm.classList.remove("hidden"); });
 
@@ -327,7 +325,6 @@ const MINUTOS = [0, 15, 30, 45];
 
       const {start,end}=parsed;
 
-      // VALIDACIONES extra: inicio >= ahora, fin > inicio
       const now = new Date();
       if (start < now){
         errEl.textContent = "La fecha/hora de inicio no puede ser anterior al momento actual.";
@@ -339,7 +336,6 @@ const MINUTOS = [0, 15, 30, 45];
         errEl.classList.remove("hidden");
         return;
       }
-      // si mismo día, bloquear por si el usuario cambió selects muy rápido
       if (startDate.value === endDate.value){
         const sh = Number(startHour.value), sm = Number(startMin.value);
         const eh = Number(endHour.value),   em = Number(endMin.value);
@@ -351,21 +347,24 @@ const MINUTOS = [0, 15, 30, 45];
       }
 
       errEl.classList.add("hidden"); errEl.textContent="";
+      descInfo?.classList.add("hidden"); if (descInfo) descInfo.textContent="";
 
       // 1) días efectivos
       const diasReal = diasEfectivos(start,end);
 
-      // 2) días cobrados (aplica mínimo)
+      // 2) días cobrados (mínimo)
       const diasCobr = Math.max(diasReal, MIN_DIAS);
 
-      const pxd = precioPorDia(diasCobr);
+      // 3) precio + descuento por rango
+      const { valor: pxd, desc } = precioYDesc(diasCobr);
       if(!Number.isFinite(pxd)||pxd<=0){
         errEl.textContent=`No se encontró tarifa para ${diasCobr} día(s). Revisá tus rangos.`;
         errEl.classList.remove("hidden");
         return;
       }
 
-      const total = pxd * diasCobr;
+      const subtotal = pxd * diasCobr;
+      const total    = Math.round(subtotal * (1 - (desc||0)/100));
 
       // Salida
       out("inicio").textContent = fmtDT(start);
@@ -375,6 +374,12 @@ const MINUTOS = [0, 15, 30, 45];
         : String(diasReal);
       out("total").textContent  = nf.format(total);
 
+      // Info visual de descuento (si aplica)
+      if (descInfo && (desc||0) > 0){
+        descInfo.textContent = `Incluye ${desc}% de descuento sobre el subtotal ${nf.format(subtotal)}.`;
+        descInfo.classList.remove("hidden");
+      }
+
       // WhatsApp
       const lineas = [
         "Reserva de cochera",
@@ -382,9 +387,15 @@ const MINUTOS = [0, 15, 30, 45];
         `Entrega: ${fmtDT(end)}`,
         `Días efectivos: ${diasReal}`,
         `Días cobrados: ${diasCobr}`,
-        `Tarifa por día: ${nf.format(pxd)}`,
-        `Total: ${nf.format(total)}`
+        `Tarifa por día: ${nf.format(pxd)}`
       ];
+      if ((desc||0) > 0){
+        lineas.push(`Subtotal: ${nf.format(subtotal)}`);
+        lineas.push(`Descuento: ${desc}%`);
+        lineas.push(`Total con descuento: ${nf.format(total)}`);
+      } else {
+        lineas.push(`Total: ${nf.format(total)}`);
+      }
       if (diasCobr > diasReal) lineas.splice(4,0,`Mínimo aplicado: ${MIN_DIAS} día(s)`);
 
       aWa.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lineas.join("\n"))}`;

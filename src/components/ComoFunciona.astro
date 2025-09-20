@@ -20,21 +20,34 @@
       <!-- Paso 1 -->
       <article class="flex flex-col items-center text-center gap-4 px-4">
         <!-- Badge numerado -->
-        <div
-          role="img"
-          aria-label="Paso 1"
-          class="relative grid place-items-center rounded-full font-extrabold text-white
-                 w-[4.3rem] h-[4.3rem] md:w-[4.8rem] md:h-[4.8rem] lg:w-[5.3rem] lg:h-[5.3rem]
-                 text-3xl md:text-4xl lg:text-5xl
-                 bg-gradient-to-br from-[var(--bp-primary-300)] to-[var(--bp-support)]
-                 ring-4 ring-[var(--bp-surface)] shadow-xl
-                 hover:scale-[1.03] transition-transform duration-200"
-        >
-          1
-          <span
-            class="pointer-events-none absolute inset-0 rounded-full blur-2xl opacity-30"
-            style="background: radial-gradient(40% 40% at 50% 50%, var(--bp-support) 0%, transparent 70%);"
-          ></span>
+        <div class="grid place-items-center rounded-full w-24 h-24 bg-[var(--bp-bg-alt)] ring-1 ring-[var(--bp-border)] shadow-sm">
+          <!-- Icono calendario (paleta) -->
+          <svg
+            class="h-12 w-12"
+            viewBox="0 0 64 64"
+            role="img"
+            aria-label="Reserva confirmada"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- Fondo de la hoja -->
+            <rect x="4" y="12" width="56" height="48" rx="8"
+              fill="var(--bp-surface)" stroke="var(--bp-primary)" stroke-width="4" />
+            <!-- Barra superior -->
+            <rect x="4" y="12" width="56" height="14" rx="8" fill="var(--bp-primary)" />
+            <!-- Argollas -->
+            <g fill="var(--bp-surface)" stroke="var(--bp-primary)" stroke-width="4" stroke-linecap="round">
+              <rect x="14" y="4" width="6" height="10" rx="3" />
+              <rect x="29" y="4" width="6" height="10" rx="3" />
+              <rect x="44" y="4" width="6" height="10" rx="3" />
+            </g>
+            <!-- Marco interior -->
+            <rect x="10" y="28" width="44" height="26" rx="4"
+              fill="none" stroke="var(--bp-border)" stroke-width="2" />
+            <!-- Check -->
+            <path d="M22 40 L30 48 L46 30" fill="none"
+              stroke="var(--bp-accent)" stroke-width="5"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
         </div>
 
         <h3 class="mt-2 text-xl md:text-2xl font-bold text-[var(--bp-ink)]">
@@ -49,21 +62,20 @@
 
       <!-- Paso 2 -->
       <article class="flex flex-col items-center text-center gap-4 px-4">
-        <div
-          role="img"
-          aria-label="Paso 2"
-          class="relative grid place-items-center rounded-full font-extrabold text-white
-                 w-[4.3rem] h-[4.3rem] md:w-[4.8rem] md:h-[4.8rem] lg:w-[5.3rem] lg:h-[5.3rem]
-                 text-3xl md:text-4xl lg:text-5xl
-                 bg-gradient-to-br from-[var(--bp-primary-300)] to-[var(--bp-support)]
-                 ring-4 ring-[var(--bp-surface)] shadow-xl
-                 hover:scale-[1.03] transition-transform duration-200"
-        >
-          2
-          <span
-            class="pointer-events-none absolute inset-0 rounded-full blur-2xl opacity-30"
-            style="background: radial-gradient(40% 40% at 50% 50%, var(--bp-support) 0%, transparent 70%);"
-          ></span>
+        <div class="grid place-items-center rounded-full w-24 h-24 bg-[var(--bp-bg-alt)] ring-1 ring-[var(--bp-border)] shadow-sm">
+          <!-- Avión -->
+          <svg
+            viewBox="0 0 420 240"
+            class="h-12 w-auto text-[var(--bp-primary-300)]"
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path fill="currentColor" d="M30 156 L60 166 C82 174, 100 168, 122 154 L182 115 L110 80 C102 76,104 66,114 64
+              L168 72 L236 84 C254 72,276 60,296 54 C318 47,344 47,366 53 C389 59,396 67,394 76
+              C392 86,374 94,350 103 L152 184 C130 194,110 198,90 190 L30 170 Z" />
+            <path fill="currentColor" d="M236 152 L208 198 C202 207,210 214,220 206 L256 156 Z" />
+          </svg>
         </div>
 
         <h3 class="mt-2 text-xl md:text-2xl font-bold text-[var(--bp-ink)]">
@@ -81,21 +93,27 @@
 
       <!-- Paso 3 -->
       <article class="flex flex-col items-center text-center gap-4 px-4">
-        <div
-          role="img"
-          aria-label="Paso 3"
-          class="relative grid place-items-center rounded-full font-extrabold text-white
-                 w-[4.3rem] h-[4.3rem] md:w-[4.8rem] md:h-[4.8rem] lg:w-[5.3rem] lg:h-[5.3rem]
-                 text-3xl md:text-4xl lg:text-5xl
-                 bg-gradient-to-br from-[var(--bp-primary-300)] to-[var(--bp-support)]
-                 ring-4 ring-[var(--bp-surface)] shadow-xl
-                 hover:scale-[1.03] transition-transform duration-200"
-        >
-          3
-          <span
-            class="pointer-events-none absolute inset-0 rounded-full blur-2xl opacity-30"
-            style="background: radial-gradient(40% 40% at 50% 50%, var(--bp-support) 0%, transparent 70%);"
-          ></span>
+        <div class="grid place-items-center rounded-full w-24 h-24 bg-[var(--bp-bg-alt)] ring-1 ring-[var(--bp-border)] shadow-sm">
+          <!-- Auto -->
+          <svg
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 79.536 79.536"
+            class="h-[4rem] w-[4rem]"
+            aria-hidden="true"
+          >
+            <path fill="#184A92" d="M15.532,56.706c-3.977,0-7.213-3.242-7.213-7.197c0-3.998,3.236-7.224,7.213-7.224
+              c3.987,0,7.226,3.226,7.226,7.224C22.758,53.463,19.519,56.706,15.532,56.706z M15.532,45.604c-2.128,0-3.876,1.75-3.876,3.883
+              c0,2.129,1.748,3.879,3.876,3.879c2.141,0,3.886-1.75,3.886-3.879C19.418,47.354,17.673,45.604,15.532,45.604z M64.137,56.706
+              c-3.987,0-7.219-3.242-7.219-7.197c0-3.998,3.231-7.224,7.219-7.224c3.977,0,7.208,3.226,7.208,7.224
+              C71.345,53.463,68.113,56.706,64.137,56.706z M64.137,45.604c-2.144,0-3.895,1.75-3.895,3.883c0,2.129,1.751,3.879,3.895,3.879
+              c2.139,0,3.884-1.75,3.884-3.879C68.021,47.354,66.275,45.604,64.137,45.604z M78.138,44.091c0-7.011-4.365-7.842-4.365-7.842
+              c-6.426-0.912-17.496-1.38-17.496-1.38c-1.016-1.766-5.707-12.039-8.44-12.039c-0.911,0-20.508,0-23.975,0
+              c-3.472,0-9.167,10.024-10.413,12.285c0,0-4.36,0.758-6.416,1.219c-1.142,0.265-4.301,0.324-4.301,9.155H0v3.997h6.654
+              c0-4.908,3.982-8.885,8.878-8.885c4.914,0,8.886,3.977,8.886,8.885h30.827c0-4.908,3.967-8.885,8.892-8.885
+              c4.898,0,8.875,3.977,8.875,8.885h6.524v-5.396H78.138z M35.589,34.191H21.751c1.872-5.831,5.339-9.994,6.801-9.994
+              c1.841,0,7.037,0,7.037,0V34.191z M38.168,34.191v-9.994c0,0,7.141,0,8.974,0c1.854,0,5.893,8.461,7.032,10.625L38.168,34.191z"/>
+          </svg>
         </div>
 
         <h3 class="tmt-2 text-xl md:text-2xl font-bold text-[var(--bp-ink)]">
