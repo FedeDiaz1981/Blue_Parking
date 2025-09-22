@@ -18,32 +18,49 @@
     <!-- Pasos -->
     <div class="mt-12 grid gap-10 md:grid-cols-3">
       <!-- Paso 1 -->
-      <article class="flex flex-col items-center text-center gap-4 px-4">
+      <article class="step flex flex-col items-center text-center gap-4 px-4">
         <!-- Badge numerado -->
-        <div class="grid place-items-center rounded-full w-24 h-24 bg-[var(--bp-bg-alt)] ring-1 ring-[var(--bp-border)] shadow-sm">
-          <!-- Icono calendario (paleta) -->
+        <div
+          role="img"
+          aria-label="Paso 1"
+          class="relative grid place-items-center rounded-full font-extrabold text-white
+                 w-[var(--step-sz)] h-[var(--step-sz)]
+                 text-3xl md:text-4xl lg:text-5xl
+                 bg-gradient-to-br from-[var(--bp-primary-300)] to-[var(--bp-support)]
+                 ring-4 ring-[var(--bp-surface)] shadow-xl
+                 hover:scale-[1.03] transition-transform duration-200"
+        >
+          1
+          <span
+            class="pointer-events-none absolute inset-0 rounded-full blur-2xl opacity-30"
+            style="background: radial-gradient(40% 40% at 50% 50%, var(--bp-support) 0%, transparent 70%);"
+          ></span>
+        </div>
+
+        <!-- Ícono: SIEMPRE 30% más chico -->
+        <div
+          class="grid place-items-center rounded-full
+                 w-[calc(var(--step-sz)*.7)] h-[calc(var(--step-sz)*.7)]
+                 bg-[var(--bp-bg-alt)] ring-1 ring-[var(--bp-border)] shadow-sm"
+        >
+          <!-- Calendario -->
           <svg
-            class="h-12 w-12"
+            class="h-[60%] w-auto"
             viewBox="0 0 64 64"
             role="img"
             aria-label="Reserva confirmada"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <!-- Fondo de la hoja -->
             <rect x="4" y="12" width="56" height="48" rx="8"
               fill="var(--bp-surface)" stroke="var(--bp-primary)" stroke-width="4" />
-            <!-- Barra superior -->
             <rect x="4" y="12" width="56" height="14" rx="8" fill="var(--bp-primary)" />
-            <!-- Argollas -->
             <g fill="var(--bp-surface)" stroke="var(--bp-primary)" stroke-width="4" stroke-linecap="round">
               <rect x="14" y="4" width="6" height="10" rx="3" />
               <rect x="29" y="4" width="6" height="10" rx="3" />
               <rect x="44" y="4" width="6" height="10" rx="3" />
             </g>
-            <!-- Marco interior -->
             <rect x="10" y="28" width="44" height="26" rx="4"
               fill="none" stroke="var(--bp-border)" stroke-width="2" />
-            <!-- Check -->
             <path d="M22 40 L30 48 L46 30" fill="none"
               stroke="var(--bp-accent)" stroke-width="5"
               stroke-linecap="round" stroke-linejoin="round" />
@@ -54,21 +71,37 @@
           Reserva
         </h3>
         <p class="text-[var(--bp-ink-muted)] leading-relaxed text-[1.3rem]">
-          <span class="font-semibold text-[var(--bp-ink)]"
-            >Contactanos por WhatsApp</span
-          > y te responderemos a la brevedad.
+          <span class="font-semibold text-[var(--bp-ink)]">Contactanos por WhatsApp</span> y te responderemos a la brevedad.
         </p>
       </article>
 
       <!-- Paso 2 -->
-      <article class="flex flex-col items-center text-center gap-4 px-4">
-        <div class="grid place-items-center rounded-full w-24 h-24 bg-[var(--bp-bg-alt)] ring-1 ring-[var(--bp-border)] shadow-sm">
+      <article class="step flex flex-col items-center text-center gap-4 px-4">
+        <div
+          role="img"
+          aria-label="Paso 2"
+          class="relative grid place-items-center rounded-full font-extrabold text-white
+                 w-[var(--step-sz)] h-[var(--step-sz)]
+                 text-3xl md:text-4xl lg:text-5xl
+                 bg-gradient-to-br from-[var(--bp-primary-300)] to-[var(--bp-support)]
+                 ring-4 ring-[var(--bp-surface)] shadow-xl
+                 hover:scale-[1.03] transition-transform duration-200"
+        >
+          2
+          <span class="pointer-events-none absolute inset-0 rounded-full blur-2xl opacity-30"
+            style="background: radial-gradient(40% 40% at 50% 50%, var(--bp-support) 0%, transparent 70%);"></span>
+        </div>
+
+        <div
+          class="grid place-items-center rounded-full
+                 w-[calc(var(--step-sz)*.7)] h-[calc(var(--step-sz)*.7)]
+                 bg-[var(--bp-bg-alt)] ring-1 ring-[var(--bp-border)] shadow-sm"
+        >
           <!-- Avión -->
           <svg
             viewBox="0 0 420 240"
-            class="h-12 w-auto text-[var(--bp-primary-300)]"
+            class="h-[60%] w-auto text-[var(--bp-primary-300)]"
             aria-hidden="true"
-            focusable="false"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path fill="currentColor" d="M30 156 L60 166 C82 174, 100 168, 122 154 L182 115 L110 80 C102 76,104 66,114 64
@@ -82,24 +115,39 @@
           Retiro del vehículo
         </h3>
         <p class="text-[var(--bp-ink-muted)] leading-relaxed text-[1.3rem]">
-          Recibimos tu vehículo según <span
-            class="font-semibold text-[var(--bp-ink)]"
-            >fecha y horario pautado </span> en la terminal del <span
-            class="font-semibold text-[var(--bp-ink)]"
-            >aeropuerto internacional Ezeiza</span
-          >.
+          Recibimos tu vehículo según <span class="font-semibold text-[var(--bp-ink)]">fecha y horario pautado</span> en la terminal del
+          <span class="font-semibold text-[var(--bp-ink)]">aeropuerto internacional Ezeiza</span>.
         </p>
       </article>
 
       <!-- Paso 3 -->
-      <article class="flex flex-col items-center text-center gap-4 px-4">
-        <div class="grid place-items-center rounded-full w-24 h-24 bg-[var(--bp-bg-alt)] ring-1 ring-[var(--bp-border)] shadow-sm">
+      <article class="step flex flex-col items-center text-center gap-4 px-4">
+        <div
+          role="img"
+          aria-label="Paso 3"
+          class="relative grid place-items-center rounded-full font-extrabold text-white
+                 w-[var(--step-sz)] h-[var(--step-sz)]
+                 text-3xl md:text-4xl lg:text-5xl
+                 bg-gradient-to-br from-[var(--bp-primary-300)] to-[var(--bp-support)]
+                 ring-4 ring-[var(--bp-surface)] shadow-xl
+                 hover:scale-[1.03] transition-transform duration-200"
+        >
+          3
+          <span class="pointer-events-none absolute inset-0 rounded-full blur-2xl opacity-30"
+            style="background: radial-gradient(40% 40% at 50% 50%, var(--bp-support) 0%, transparent 70%);"></span>
+        </div>
+
+        <div
+          class="grid place-items-center rounded-full
+                 w-[calc(var(--step-sz)*.7)] h-[calc(var(--step-sz)*.7)]
+                 bg-[var(--bp-bg-alt)] ring-1 ring-[var(--bp-border)] shadow-sm"
+        >
           <!-- Auto -->
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 79.536 79.536"
-            class="h-[4rem] w-[4rem]"
+            class="h-[60%] w-auto"
             aria-hidden="true"
           >
             <path fill="#184A92" d="M15.532,56.706c-3.977,0-7.213-3.242-7.213-7.197c0-3.998,3.236-7.224,7.213-7.224
@@ -120,10 +168,7 @@
           Entrega del vehículo
         </h3>
         <p class="text-[var(--bp-ink-muted)] leading-relaxed text-[1.3rem]">
-          Entregamos tu vehículo <span
-            class="font-semibold text-[var(--bp-ink)]"
-            >según fecha y horario pautado</span
-          >.
+          Entregamos tu vehículo <span class="font-semibold text-[var(--bp-ink)]">según fecha y horario pautado</span>.
         </p>
       </article>
     </div>
@@ -131,10 +176,20 @@
     <!-- Botón -->
     <div class="mt-12 text-center">
       <a
-        href="#"  data-reserva-open
+        href="#" data-reserva-open
         class="mt-6 text-center w-[10%] rounded-md bg-[--bp-support] px-6 py-3 text-white font-semibold btn-accent"
-        data-cta-observer>Reserva</a
-      >
+        data-cta-observer>Reserva</a>
     </div>
   </div>
+
+  <style>
+    /* Tamaño base de los círculos numerados y relación con iconos */
+    #COMO-FUNCIONA .step{ --step-sz: 5.5rem; }              /* base */
+    @media (min-width: 768px){  /* md */
+      #COMO-FUNCIONA .step{ --step-sz: 6rem; }
+    }
+    @media (min-width: 1024px){ /* lg */
+      #COMO-FUNCIONA .step{ --step-sz: 6.5rem; }
+    }
+  </style>
 </section>
