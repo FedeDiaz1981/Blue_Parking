@@ -7,6 +7,13 @@ module.exports = {
     "./src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}"
   ],
   theme: {
+    screens: {
+              'sm': '480px', // Custom small screen breakpoint
+              'md': '768px',
+              'lg': '976px',
+              'xl': '1440px',
+              'desktop': '1920px', // Custom breakpoint named 'desktop'
+            },
     extend: {
       colors: {
         brand: {
